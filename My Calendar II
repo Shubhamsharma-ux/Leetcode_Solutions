@@ -1,0 +1,21 @@
+class MyCalendarTwo {
+
+    List<int[]> arr;
+    public MyCalendarTwo() {
+        this.arr = new ArrayList<>();
+    }
+    
+    public boolean book(int startTime, int endTime) {
+        List<int[]> list1 = new ArrayList<>();
+        for (int[] val: arr){
+            if (Math.max(val[0],startTime) < Math.min(val[1],endTime)){
+                for (int[] v:list1){
+                    if (Math.max(val[0],v[0]) < Math.min(val[1],v[1])) return false;
+                }
+                list1.add(val);
+            }
+        }
+        arr.add(new int[]{startTime,endTime});
+        return true;
+    }
+}
