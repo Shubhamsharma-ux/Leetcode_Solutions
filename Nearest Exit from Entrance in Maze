@@ -1,0 +1,48 @@
+class Solution {
+    private static final int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+    public static int nearestExit(char[][] maze, int[] entrance) {
+        int n = maze.length, m = maze[0].length;
+        int ans = Integer.MAX_VALUE;
+
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{entrance[0], entrance[1], 0});
+        boolean[][] vis = new boolean[n][m];
+        vis[entrance[0]][entrance[1]] = true;
+
+        while (!q.isEmpty()) {
+            int[] cur = q.poll();
+            int x = cur[0], y = cur[1], d = cur[2];
+
+            if ((x == 0 || y == 0 || x == n - 1 || y == m - 1) && !(x == entrance[0] && y == entrance[1])) {
+                ans = Math.min(ans, d);
+                continue;
+            }
+
+            for (int[] dir : dirs) {
+                int nx = x + dir[0];
+                int ny = y + dir[1];
+
+                if (nx >= 0 && ny >= 0 && nx < n && ny < m && maze[nx][ny] == '.' && !vis[nx][ny]) {
+                    vis[nx][ny] = true;
+                    q.offer(new int[]{nx, ny, d + 1});
+                }
+            }
+        }
+        return ans == Integer.MAX_VALUE ? -1 : ans;
+    }
+    public static void main(String[] args) {
+//        char[][] maze = {
+//                {'+', '+', '.', '+'},
+//                {'.', '.', '.', '+'},
+//                {'+', '+', '+', '.'}
+//        };
+        char[][] maze = {
+                {'+', '+', '+'},
+                {'.', '.', '.'},
+                {'+', '+', '+'}
+        };
+
+        int[] entrance = {1, 2};
+        System.out.println(nearestExit(maze, entrance));
+    }
+}
