@@ -1,0 +1,69 @@
+class Solution {
+
+    private PriorityQueue<int[]> maxHeap = new PriorityQueue<>((a, b) -> {
+        if (a[1] != b[1]) return Integer.compare(b[1], a[1]);
+        else return Integer.compare(b[0], a[0]);
+    });
+
+    private PriorityQueue<int[]> minHeap = new PriorityQueue<>((a, b) -> {
+        if (a[1] != b[1]) return Integer.compare(a[1], b[1]);
+        else return Integer.compare(a[0], b[0]);
+    });
+
+    private int maxHeapSize = 0;
+    private int minHeapSize = 0;
+
+    public double[] medianSlidingWindow(int[] nums, int k) {
+        double[] ans = new double[nums.length - k + 1];
+
+        for (int i = 0; i < k; i++)
+            add(new int[]{i, nums[i]});
+
+        if ((k & 1) == 1)
+            ans[0] = maxHeap.peek()[1];
+        else
+            ans[0] = ((double) maxHeap.peek()[1] / 2.0) + ((double) minHeap.peek()[1] / 2.0);
+
+        for (int i = k; i < nums.length; i++) {
+            int oldIndex = i - k;
+
+            if (nums[oldIndex] <= maxHeap.peek()[1])
+                maxHeapSize--;
+             else
+                minHeapSize--;
+
+            clean(oldIndex);
+
+            add(new int[]{i, nums[i]});
+
+            clean(oldIndex);
+
+            ans[i - k + 1] = (k & 1) == 1 ? maxHeap.peek()[1] :
+                    ((double) maxHeap.peek()[1] / 2.0) + ((double) minHeap.peek()[1] / 2.0);
+        }
+        return ans;
+    }
+
+    void clean(int oldIndex) {
+        while (!maxHeap.isEmpty() && maxHeap.peek()[0] <= oldIndex)
+            maxHeap.poll();
+
+        while (!minHeap.isEmpty() && minHeap.peek()[0] <= oldIndex)
+            minHeap.poll();
+
+    }
+
+    void add(int[] value){
+        maxHeap.add(value);
+        minHeap.add(maxHeap.poll());
+        minHeapSize++;
+
+        if (maxHeapSize < minHeapSize) {
+
+            maxHeap.add(minHeap.poll());
+
+            maxHeapSize++;
+            minHeapSize--;
+        }
+    }
+}
